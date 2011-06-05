@@ -47,13 +47,8 @@ class FormatterTests < Test::Unit::TestCase
     @formatter = Formatter.new
   end
 
-  # Passes but still tests internal data format. Ick!
-  def test_report_range_creates_dates
-    assert_nil @formatter.start_date
-    assert_nil @formatter.end_date
-    @formatter.report_range(Time.local(2005, 3, 4), Time.local(2005, 4, 4))
-    assert_not_nil @formatter.start_date
-    assert_not_nil @formatter.end_date
+  # What should this test?
+  def test_report_range
   end
 
   def test_header_format
@@ -83,12 +78,14 @@ class FormatterTests < Test::Unit::TestCase
     assert_equal(expected, actual)
   end
 
+  # CNK and what should this test? It was also testing the structure
+  # of an internal data structure so I needed to create an attr_reader
+  # just for the test. That is a code smell!
   def test_use_subsystem_with_change_count_collects_subsystem_lines
     change_data = [['audit', 5], ['ui', 39], ['util', 0]]
     change_data.each do |name, change_count|
       @formatter.use_subsystem_with_change_count(name, change_count)
     end
-    assert_equal change_data, @formatter.changes
   end
 
   # general outline based on original test_order_by_descending_change_count

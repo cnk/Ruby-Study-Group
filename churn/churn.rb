@@ -40,11 +40,6 @@ class SubversionRepository
 end
 
 class Formatter
-  # CNK what do people think about exposing these? I did it so I could
-  # access their values in my tests. I think that is a code smell. How
-  # should I be writing my unit tests so I am not testing the values
-  # of internal data?
-  attr_reader :start_date, :end_date, :changes
 
   # On instantiation, set up an instance variable to hold subsystem lines
   def initialize
