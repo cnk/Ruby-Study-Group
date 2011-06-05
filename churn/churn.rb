@@ -106,5 +106,5 @@ if $0 == __FILE__
   subsystem_names.each do | name |
     formatter.use_subsystem_with_change_count(name, repository.change_count_for(name, start_date))
   end
-  puts formatter.output
+  formatter.output
 end
