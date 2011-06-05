@@ -86,8 +86,9 @@ class Formatter
   end
 
   def output
-    puts header(@start_date)
-    puts order_by_descending_change_count(@subsystem_lines)
+    output = []
+    output << header(@start_date)
+    output << order_by_descending_change_count(@subsystem_lines)
   end
 end
 
@@ -106,5 +107,5 @@ if $0 == __FILE__
   subsystem_names.each do | name |
     formatter.use_subsystem_with_change_count(name, repository.change_count_for(name, start_date))
   end
-  formatter.output
+  puts formatter.output
 end
