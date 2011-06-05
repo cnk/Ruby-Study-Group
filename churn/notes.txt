@@ -33,7 +33,7 @@ Exercises:
    Formatter class and now the tests pass. Now we need to adjust the
    main method of the script accordingly.
 
-4. It was really easy to make the two changes shown in exercise 4 -
+4-7. It was really easy to make the two changes shown in exercise 4 -
    first the very simple changes to use a formatter class - and then
    the change to move the line collecting into the formatter
    class. But I am having a really hard time writing sensible tests
@@ -42,3 +42,16 @@ Exercises:
    prints out data. So I don't want to write a test that tests the
    *implimentation* of use_subsystem_with_change_count because I want
    to change the content of @subsystem_lines.
+
+   So I couldn't take it any more. I refactored the Formatter class so
+   it keeps the data as an array of arrays until the very last minute,
+   and then creates the formatted strings in the output method. I was
+   tempted to use a hash, but I am not sure how I could do a reverse
+   lookup from the key to the value if I have two subsystems with the
+   same number of changes (e.g. {:ui => 5, :util => 5}). The churn
+   script was easy to get working - but my tests are a mess. I had to
+   add 2 attr_reader methods to my Formatter class because my tests
+   were looking at data directly. That is probably bad. But what
+   should I be doing instead? What should test_use_date and
+   test_use_subsystem_with_change_count be testing anyway?
+

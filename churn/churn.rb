@@ -40,11 +40,15 @@ class SubversionRepository
 end
 
 class Formatter
-  attr_reader :start_date
+  # CNK what do people think about exposing these? I did it so I could
+  # access their values in my tests. I think that is a code smell. How
+  # should I be writing my unit tests so I am not testing the values
+  # of internal data?
+  attr_reader :start_date, :changes
 
   # On instantiation, set up an instance variable to hold subsystem lines
   def initialize
-    @subsystem_lines = []
+    @changes = []
   end
 
   def use_date(start_date)
@@ -52,13 +56,10 @@ class Formatter
   end
 
   def use_subsystem_with_change_count(name, count)
-    @subsystem_lines << subsystem_line(name, count)
+    @changes << [name, count]
   end
 
   def header(start_date)
-    #  "Changes since " + d.strftime("%Y-%m-%d")+":"
-    #  "Changes since #{d.strftime("%Y-%m-%d")}:"
-    #  d.strftime("Changes since %Y-%m-%d:")'
     "Changes since #{start_date}:"
   end
 
@@ -70,25 +71,22 @@ class Formatter
     "#{name.rjust(14)} #{asterisks_for(count)} (#{count})"
   end
 
-  # return the number in the parentheses from this string: "       ui2 **** (19)"
-  def churn_line_to_int(line)
-    /\((\d+)\)/.match(line)[1].to_i
-    # line =~ /\((\d+)\)/
-    # $1.to_i
-  end
-
-  def order_by_descending_change_count(lines)
-    lines.sort do |line_a, line_b|
-      line_a_count = churn_line_to_int(line_a)
-      line_b_count = churn_line_to_int(line_b)
-      - (line_a_count <=> line_b_count)
+  # changes is an array of arrays of the format [name, count]
+  # So we want to sort by the second element - descending
+  def order_by_descending_change_count(changes)
+    changes.sort do |a, b|
+      - (a[1] <=> b[1])
     end
   end
 
   def output
     output = []
     output << header(@start_date)
-    output << order_by_descending_change_count(@subsystem_lines)
+    ordered_changes = order_by_descending_change_count(@changes)
+    ordered_changes.each do |change|
+      output << subsystem_line(change[0], change[1])
+    end
+    output
   end
 end
 

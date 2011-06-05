@@ -72,29 +72,42 @@ class FormatterTests < Test::Unit::TestCase
     assert_equal('***', @formatter.asterisks_for(17))
   end
 
-  def test_churn_line_to_int_extracts_parenthesized_change_count
-    assert_equal(19, @formatter.churn_line_to_int("       ui2 **** (19)"))
-    assert_equal(9, @formatter.churn_line_to_int("       ui ** (9)"))
-  end
+  # CNK I refactored to do the ordering before creating the line, so I don't need this anymore
+  # def test_churn_line_to_int_extracts_parenthesized_change_count
+  #   assert_equal(19, @formatter.churn_line_to_int("       ui2 **** (19)"))
+  #   assert_equal(9, @formatter.churn_line_to_int("       ui ** (9)"))
+  # end
 
   def test_order_by_descending_change_count
-    original = [ "all that really matters is the number in parens - (1)",
-                 "     inventory  (0)",
-                 "            ui ** (12)" ]
-
-    expected = [ "            ui ** (12)",
-                 "all that really matters is the number in parens - (1)",
-                 "     inventory  (0)" ]
-
+    original = [['audit', 5], ['ui', 39], ['util', 0]]
+    expected = [['ui', 39], ['audit', 5], ['util', 0]]
     actual = @formatter.order_by_descending_change_count(original)
 
     assert_equal(expected, actual)
   end
 
   def test_use_subsystem_with_change_count_collects_subsystem_lines
+    change_data = [['audit', 5], ['ui', 39], ['util', 0]]
+    change_data.each do |name, change_count|
+      @formatter.use_subsystem_with_change_count(name, change_count)
+    end
+    assert_equal change_data, @formatter.changes
   end
 
+  # general outline based on original test_order_by_descending_change_count
   def test_output
+    expected = ["Changes since 2011-05-08:", "     inventory *** (16)", "            ui ** (11)", "   fulfillment ** (10)"]
+    # set up data
+    start_date = "2011-05-08"
+    changes = [['inventory', 16], ['ui', 11], ['fulfillment', 10]]
+
+    # feed it to formatter as churn does
+    @formatter.use_date(start_date)
+    changes.each do |name, change_count|
+      @formatter.use_subsystem_with_change_count(name, change_count)
+    end
+    
+    assert_equal expected, @formatter.output
   end
 
 end
