@@ -32,3 +32,13 @@ Exercises:
 3. Moved all the remaining methods (except month_before) into a new
    Formatter class and now the tests pass. Now we need to adjust the
    main method of the script accordingly.
+
+4. It was really easy to make the two changes shown in exercise 4 -
+   first the very simple changes to use a formatter class - and then
+   the change to move the line collecting into the formatter
+   class. But I am having a really hard time writing sensible tests
+   for the churn code as shown on p 122. I think mostly because I
+   fundamentally want to change how the formatter gets, stores, and
+   prints out data. So I don't want to write a test that tests the
+   *implimentation* of use_subsystem_with_change_count because I want
+   to change the content of @subsystem_lines.

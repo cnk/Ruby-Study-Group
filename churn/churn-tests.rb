@@ -47,6 +47,12 @@ class FormatterTests < Test::Unit::TestCase
     @formatter = Formatter.new
   end
 
+  def test_use_date_creates_start_date
+    assert_nil @formatter.start_date
+    @formatter.use_date("2005-08-05")
+    assert_not_nil @formatter.start_date
+  end
+
   def test_header_format
     assert_equal("Changes since 2005-08-05:",
                  @formatter.header('2005-08-05'))
@@ -83,6 +89,12 @@ class FormatterTests < Test::Unit::TestCase
     actual = @formatter.order_by_descending_change_count(original)
 
     assert_equal(expected, actual)
+  end
+
+  def test_use_subsystem_with_change_count_collects_subsystem_lines
+  end
+
+  def test_output
   end
 
 end
