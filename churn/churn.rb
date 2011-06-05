@@ -13,12 +13,12 @@ class SubversionRepository
     @root = root    # (1)
   end
 
-  def date(a_time)
+  def format_date(a_time)
     a_time.strftime("%Y-%m-%d")
   end
 
   def change_count_for(name, start_date)
-    extract_change_count_from(log(name, start_date))
+    extract_change_count_from(log(name, format_date(start_date)))
   end
 
   def extract_change_count_from(log_text)
@@ -44,15 +44,17 @@ class Formatter
   # access their values in my tests. I think that is a code smell. How
   # should I be writing my unit tests so I am not testing the values
   # of internal data?
-  attr_reader :start_date, :changes
+  attr_reader :start_date, :end_date, :changes
 
   # On instantiation, set up an instance variable to hold subsystem lines
   def initialize
     @changes = []
   end
 
-  def use_date(start_date)
+  # This is now getting Time objects instead of strings
+  def report_range(start_date, end_date)
     @start_date = start_date
+    @end_date = end_date
   end
 
   def use_subsystem_with_change_count(name, count)
@@ -60,7 +62,7 @@ class Formatter
   end
 
   def header(start_date)
-    "Changes since #{start_date}:"
+    start_date.strftime("Changes since %Y-%m-%d:")
   end
 
   def asterisks_for(n)
@@ -98,12 +100,12 @@ if $0 == __FILE__
   subsystem_names = ['audit', 'fulfillment', 'persistence', 'ui', 'util', 'inventory']
   root="svn://rubyforge.org//var/svn/churn-demo"
   repository = SubversionRepository.new(root)
-  start_date = repository.date(month_before(Time.now))
+  last_month = month_before(Time.now)
 
   formatter = Formatter.new
-  formatter.use_date(start_date)
+  formatter.report_range(last_month, Time.now)
   subsystem_names.each do | name |
-    formatter.use_subsystem_with_change_count(name, repository.change_count_for(name, start_date))
+    formatter.use_subsystem_with_change_count(name, repository.change_count_for(name, last_month))
   end
   puts formatter.output
 end

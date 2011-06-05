@@ -55,3 +55,4 @@ Exercises:
    should I be doing instead? What should test_use_date and
    test_use_subsystem_with_change_count be testing anyway?
 
+8. Very satisfying refactoring.

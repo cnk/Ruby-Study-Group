@@ -28,7 +28,7 @@ class SubversionRepositoryTests < Test::Unit::TestCase
 
   def test_date
     assert_equal('2005-03-04',
-                 @repository.date(Time.local(2005, 3, 4)))
+                 @repository.format_date(Time.local(2005, 3, 4)))
   end
 
   def test_subversion_log_can_have_no_changes
@@ -47,15 +47,18 @@ class FormatterTests < Test::Unit::TestCase
     @formatter = Formatter.new
   end
 
-  def test_use_date_creates_start_date
+  # Passes but still tests internal data format. Ick!
+  def test_report_range_creates_dates
     assert_nil @formatter.start_date
-    @formatter.use_date("2005-08-05")
+    assert_nil @formatter.end_date
+    @formatter.report_range(Time.local(2005, 3, 4), Time.local(2005, 4, 4))
     assert_not_nil @formatter.start_date
+    assert_not_nil @formatter.end_date
   end
 
   def test_header_format
     assert_equal("Changes since 2005-08-05:",
-                 @formatter.header('2005-08-05'))
+                 @formatter.header(Time.local(2005, 8, 5)))
   end
 
   def test_normal_subsystem_line_format
@@ -71,12 +74,6 @@ class FormatterTests < Test::Unit::TestCase
     assert_equal('****', @formatter.asterisks_for(18))
     assert_equal('***', @formatter.asterisks_for(17))
   end
-
-  # CNK I refactored to do the ordering before creating the line, so I don't need this anymore
-  # def test_churn_line_to_int_extracts_parenthesized_change_count
-  #   assert_equal(19, @formatter.churn_line_to_int("       ui2 **** (19)"))
-  #   assert_equal(9, @formatter.churn_line_to_int("       ui ** (9)"))
-  # end
 
   def test_order_by_descending_change_count
     original = [['audit', 5], ['ui', 39], ['util', 0]]
@@ -96,13 +93,14 @@ class FormatterTests < Test::Unit::TestCase
 
   # general outline based on original test_order_by_descending_change_count
   def test_output
-    expected = ["Changes since 2011-05-08:", "     inventory *** (16)", "            ui ** (11)", "   fulfillment ** (10)"]
+    expected = ["Changes since 2005-03-04:", "     inventory *** (16)", "            ui ** (11)", "   fulfillment ** (10)"]
     # set up data
-    start_date = "2011-05-08"
+    start_date = Time.local(2005, 3, 4)
+    end_date = Time.local(2005, 4, 4)
     changes = [['inventory', 16], ['ui', 11], ['fulfillment', 10]]
 
     # feed it to formatter as churn does
-    @formatter.use_date(start_date)
+    @formatter.report_range(start_date, end_date)
     changes.each do |name, change_count|
       @formatter.use_subsystem_with_change_count(name, change_count)
     end
