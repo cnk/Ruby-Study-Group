@@ -39,38 +39,40 @@ class SubversionRepository
   
 end
 
+class Formatter
+  def header(d)
+    #  "Changes since " + d.strftime("%Y-%m-%d")+":"
+    #  "Changes since #{d.strftime("%Y-%m-%d")}:"
+    #  d.strftime("Changes since %Y-%m-%d:")'
+    "Changes since #{d}:"
+  end
+
+  def asterisks_for(n)
+    '*'.*((n/5.0).round)   #return n/5 asterisks, rounded up or down
+  end
+
+  def subsystem_line(name, count)
+    "#{name.rjust(14)} #{asterisks_for(count)} (#{count})"
+  end
+
+  # return the number in the parentheses from this string: "       ui2 **** (19)"
+  def churn_line_to_int(line)
+    /\((\d+)\)/.match(line)[1].to_i
+    # line =~ /\((\d+)\)/
+    # $1.to_i
+  end
+
+  def order_by_descending_change_count(lines)
+    lines.sort do |line_a, line_b|
+      line_a_count = churn_line_to_int(line_a)
+      line_b_count = churn_line_to_int(line_b)
+      - (line_a_count <=> line_b_count)
+    end
+  end
+end
+
 def month_before(t)
   t - (28*60*60*24)
-end
-
-def header(d)
-#  "Changes since " + d.strftime("%Y-%m-%d")+":"
-#  "Changes since #{d.strftime("%Y-%m-%d")}:"
-#  d.strftime("Changes since %Y-%m-%d:")'
-"Changes since #{d}:"
-end
-
-def asterisks_for(n)
-  '*'.*((n/5.0).round)   #return n/5 asterisks, rounded up or down
-end
-
-def subsystem_line(name, count)
-  "#{name.rjust(14)} #{asterisks_for(count)} (#{count})"
-end
-
-# return the number in the parentheses from this string: "       ui2 **** (19)"
-def churn_line_to_int(line)
-  /\((\d+)\)/.match(line)[1].to_i
-  # line =~ /\((\d+)\)/
-  # $1.to_i
-end
-
-def order_by_descending_change_count(lines)
-  lines.sort do |line_a, line_b|
-    line_a_count = churn_line_to_int(line_a)
-    line_b_count = churn_line_to_int(line_b)
-    - (line_a_count <=> line_b_count)
-  end
 end
 
 if $0 == __FILE__   

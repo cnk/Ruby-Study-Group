@@ -1,0 +1,34 @@
+Chapter 11 exercises
+
+First I transferred all the changes from snapshots/churn-classes.v2.rb
+into our working file (keeping the svn_log mocks we created). The
+tests from snapshots/churn-tests-classes.rb run
+
+Exercises:
+
+1. What should be moved to a formatter class? 
+   One possible answer: everything else - with the exception of month_before
+
+   Or one might argue:
+        definitely these:
+          header	 
+   	  asterisks_for
+   	  subsystem_line
+       	  order_by_descending_change_count 
+   
+   I am not so sure about churn_line_to_int.  For one thing, we
+   shouldn't be reextracting that count from the subssystem line. The
+   loop that creates subsystem_lines shouldn't return a formatted
+   line, it should return the subsystem name and the change count and
+   the formatter should do what it likes with it. (That has been
+   bugging me for a week or two.)
+
+2. I copied snapshots/churn-tests-classes.rb into churn-tests.rb as
+   the starting point for this exercise. Then moved all the remaining
+   tests except for test_month_before_is_28_days out of the ChurnTests
+   class into a new FormatterTests class. I added a setup method that
+   created a formatter instance which I then used in all the tests.
+
+3. Moved all the remaining methods (except month_before) into a new
+   Formatter class and now the tests pass. Now we need to adjust the
+   main method of the script accordingly.
