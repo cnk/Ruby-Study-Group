@@ -81,9 +81,10 @@ if $0 == __FILE__
   repository = SubversionRepository.new(root)
   start_date = repository.date(month_before(Time.now))
 
-  puts header(start_date)
+  formatter = Formatter.new
+  puts formatter.header(start_date)
   subsystem_lines = subsystem_names.collect do | name |
-    subsystem_line(name, repository.change_count_for(name, start_date))
+    formatter.subsystem_line(name, repository.change_count_for(name, start_date))
   end
-  puts order_by_descending_change_count(subsystem_lines)
+  puts formatter.order_by_descending_change_count(subsystem_lines)
 end
